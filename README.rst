@@ -5,11 +5,15 @@ jenkinslint
 A basic Jenkinsfile linter (validator). Can validate files using a Jenkins web
 interface, or the Jenkins SSH interface.
 
+.. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
+   :target: https://github.com/pre-commit/pre-commit
+   :alt: pre-commit
+
 Usage
 =====
 
 To configure which type of validation to use (web or SSH), create an INI file
-named `.jenkinslintrc` in the root of your repository.
+named ``.jenkinslintrc`` in the root of your repository.
 
 The following parameters are supported:
 
