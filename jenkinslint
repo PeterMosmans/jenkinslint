@@ -33,7 +33,7 @@ fi
 
 # Read INI file if it exists
 # shellcheck disable=SC1090
-[[ -f "${INIFILE}" ]] && source <(grep "=" "${INIFILE}")
+[[ -f "${INIFILE}" ]] && source "${INIFILE}"
 
 JENKINS_FILE=${1:-Jenkinsfile}
 if [ ! -f "${JENKINS_FILE}" ]; then
