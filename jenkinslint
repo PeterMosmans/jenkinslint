@@ -35,18 +35,11 @@ fi
 # shellcheck disable=SC1090
 [[ -f "${INIFILE}" ]] && source "${INIFILE}"
 
-JENKINS_FILE=${1:-Jenkinsfile}
-if [ ! -f "${JENKINS_FILE}" ]; then
-    echo "Could not find file ${JENKINS_FILE}"
-    exit 1
-else
-    echo "Validating ${JENKINS_FILE}"
-fi
-
 # Disable certificate validation when JENKINS_UNSAFE_SSL parameter is defined
 [[ -n "${JENKINS_UNSAFE_SSL}" ]] && JENKINS_UNSAFE_SSL="-k"
 
 ssh_validation(){
+    JENKINS_FILE=$1
     result=$(ssh "${JENKINS_SERVER}" -p "${JENKINS_SSH_PORT}" declarative-linter < "${JENKINS_FILE}")
     return=$?
     if [[ $return -ge 2 ]]; then
@@ -72,6 +65,7 @@ show_settings(){
 }
 
 web_validation(){
+    JENKINS_FILE=$1
     JENKINS_CRUMB=$(curl ${JENKINS_UNSAFE_SSL} -s -m 5 "$JENKINS_URL/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,\":\",//crumb)")
     return=$?
     if [ $return -ne 0 ]; then
@@ -92,16 +86,35 @@ web_validation(){
 validate(){
     if [[ $result =~ Errors ]]; then
         echo "$result"
-        exit 1
+        ERROR=true
     else
         echo "$result"
-        exit 0
     fi
 }
 
-if [[ "$JENKINS_SSH_PORT" ]]; then
-    ssh_validation
-else
-    web_validation
+ERROR=false
+
+JENKINS_FILE_LIST=("${@}")
+if [[ $# == 0 ]]; then
+    # Default to file named Jenkinsfile if no arguments are supplied
+    JENKINS_FILE_LIST+=("Jenkinsfile")
 fi
-validate
+
+for jenkinsfile in "${JENKINS_FILE_LIST[@]}"; do
+    if [ ! -f "${jenkinsfile}" ]; then
+        echo "Could not find file ${jenkinsfile}"
+    else
+        echo "Linting ${jenkinsfile} ..."
+        if [[ "$JENKINS_SSH_PORT" ]]; then
+            ssh_validation "$jenkinsfile"
+        else
+            web_validation "$jenkinsfile"
+        fi
+        validate
+    fi
+done
+
+if [[ $ERROR == "true" ]]; then
+    exit 1
+fi
+exit 0

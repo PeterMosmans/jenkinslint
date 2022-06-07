@@ -1,7 +1,7 @@
 ---
 - id: jenkinslint
-  name: Lint Jenkinsfile
+  name: Lint Jenkinsfiles
   description: Validates Jenkinsfiles using a Jenkins server
   entry: jenkinslint
   language: script
-  files: ^Jenkinsfile
+  types: [file, jenkins]
