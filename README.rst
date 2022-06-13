@@ -39,12 +39,12 @@ Not all parameters need to be set. Example:
 Standalone
 ----------
 
-Validate files using ``jenkinslint`` followed by the name of the Jenkinsfile,
+Validate files using ``jenkinslint`` followed by a list of Jenkinsfiles,
 e.g.
 
 ::
 
-   jenkinslint Jenkinsfile
+   jenkinslint Jenkinsfile a.jenkins b.jenkinsfile
 
 Using the pre-commit framework
 ------------------------------
@@ -55,10 +55,9 @@ Install the pre-commit framework, and add the following to the
 ::
 
     - repo: https://github.com/PeterMosmans/jenkinslint
-      rev: master
+      rev: v1.0.0
       hooks:
        - id: jenkinslint
 
-This will automatically validate files named ``Jenkinsfile`` during the pre
-commit phase.
-
+This will automatically validate files named ``Jenkinsfile, *.jenkins or
+*.jenkinsfile`` during the pre commit phase.
